@@ -1,18 +1,21 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Button } from "flowbite-react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Admin from "./pages/Admin";
+import ListEmployees from "./pages/ListEmPloyees";
+import FormProfile from "./pages/FormProfile";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-
-      <Button color="dark">button</Button>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to={"/admin"} replace />} />
+        <Route path="admin" element={<Admin />}>
+          <Route index element={<ListEmployees />} />
+          <Route path="product/:id" element={<FormProfile />} />
+          <Route path="product" element={<FormProfile />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
