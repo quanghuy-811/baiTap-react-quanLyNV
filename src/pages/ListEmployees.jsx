@@ -1,10 +1,22 @@
 import axios from "axios";
-import { Table } from "flowbite-react";
+import { Button, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 const ListEmployees = () => {
   const [arrEmployees, setArrEmployees] = useState([]);
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(
+        `https://apitraining.cybersoft.edu.vn/api/QuanLyNhanVienApi/XoaNhanVien?maSinhVien=${id}`
+      );
+      toast.success(response.data);
+      getAll();
+    } catch (error) {}
+  };
+
   const getAll = async () => {
     try {
       const respone = await axios.get(
@@ -12,9 +24,7 @@ const ListEmployees = () => {
       );
 
       setArrEmployees(respone.data);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -57,13 +67,21 @@ const ListEmployees = () => {
                     <Table.Cell> {item.luongCoBan}</Table.Cell>
                     <Table.Cell> {item.soGioLamTrongThang}</Table.Cell>
 
-                    <Table.Cell>
+                    <Table.Cell className="flex space-x-2">
                       <NavLink
                         to={`/admin/product/${item.maNhanVien}`}
-                        className="font-medium text-cyan-600 hover:underline"
+                        className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 "
                       >
                         Sửa
                       </NavLink>
+                      <Button
+                        onClick={() => {
+                          handleDelete(item.maNhanVien);
+                        }}
+                        color="failure"
+                      >
+                        Xóa
+                      </Button>
                     </Table.Cell>
                   </Table.Row>
                 );

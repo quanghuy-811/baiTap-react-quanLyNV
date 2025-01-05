@@ -2,12 +2,19 @@ import axios from "axios";
 import { Button, Label, Select, TextInput } from "flowbite-react";
 import { useFormik } from "formik";
 import { useEffect } from "react";
-import { useMatch, useParams, useSearchParams } from "react-router-dom";
+import {
+  useMatch,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import * as Yup from "yup";
 
 const FormProfile = () => {
+  const navigate = useNavigate();
   const match = useMatch("/admin/product/:id");
-  // console.log("match: ", match);
+  //
 
   const isEdit = !!match;
 
@@ -16,11 +23,9 @@ const FormProfile = () => {
       const reponse = await axios.get(
         `https://apitraining.cybersoft.edu.vn/api/QuanLyNhanVienApi/LayThongTinNhanVien?maNhanVien=${match.params.id}`
       );
-      console.log(reponse.data);
+
       frmProfile.setValues(reponse.data);
-    } catch (error) {
-      console.log("error: ", error);
-    }
+    } catch (error) {}
   };
 
   const positionConfig = {
@@ -57,8 +62,7 @@ const FormProfile = () => {
     }),
 
     onSubmit: async (value) => {
-      console.log("submit");
-      // console.log(value);
+      //
 
       let url =
         "https://apitraining.cybersoft.edu.vn/api/QuanLyNhanVienApi/ThemNhanVien";
@@ -70,32 +74,32 @@ const FormProfile = () => {
       }
 
       try {
-        console.log("value", value);
-
-        const respone = await axios[method](url, value);
-
-        console.log(respone.data);
+        const response = await axios[method](url, value);
+        toast.success(response.data);
+        navigate("../");
       } catch (error) {
-        console.log("error: ", error);
+        toast.warning(error.response.data);
       }
     },
   });
 
   useEffect(() => {
-    //
-    const coefficient = positionConfig[frmProfile.values.chucVu] || "";
-    frmProfile.setFieldValue("heSoChucVu", coefficient);
-
     // Nếu isEdit = true thì sẽ call api get by id
     if (isEdit) {
       getById();
     }
-  }, [frmProfile.values.chucVu, isEdit]);
-
+  }, [isEdit]);
+  useEffect(() => {
+    //
+    const coefficient = positionConfig[frmProfile.values.chucVu] || "";
+    frmProfile.setFieldValue("heSoChucVu", coefficient);
+  }, [frmProfile.values.chucVu]);
   return (
     <div className="px-3 py-6">
       <div className="">
-        {/* <h1 className="title">{isEdit ? "Edit product" : "Add product"}</h1> */}
+        <h1 className="text-center text-3xl font-bold my-4">
+          {isEdit ? "Form Edit" : "Form Add"}
+        </h1>
 
         <div>
           <form
@@ -209,7 +213,7 @@ const FormProfile = () => {
                 )}
             </div>
 
-            <Button type="submit">edit</Button>
+            <Button type="submit">{isEdit ? "Edit" : "Add"}</Button>
           </form>
         </div>
       </div>
